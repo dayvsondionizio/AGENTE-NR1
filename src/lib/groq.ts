@@ -30,6 +30,13 @@ function cleanJsonResponse(text: string): string {
   return cleaned;
 }
 
+function getApiKey(): string {
+  if (typeof window !== "undefined") {
+    return (import.meta as any).env?.VITE_GROQ_API_KEY || "";
+  }
+  return process.env.VITE_GROQ_API_KEY || process.env.GROQ_API_KEY || "";
+}
+
 export async function analyzeSituation(situation: string): Promise<AnalysisResult> {
   const prompt = `
     Você é o Agente de Decisão Humanizada NR-1, criado pelo Contador de Padarias.
@@ -69,7 +76,11 @@ export async function analyzeSituation(situation: string): Promise<AnalysisResul
     Responda APENAS o JSON válido, sem texto adicional.
   `;
 
-  const apiKey = import.meta.env.VITE_GROQ_API_KEY || "";
+  const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    throw new Error("API Key não configurada. Configure VITE_GROQ_API_KEY no arquivo .env");
+  }
 
   const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
