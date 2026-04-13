@@ -30,19 +30,12 @@ function cleanJsonResponse(text: string): string {
   return cleaned;
 }
 
-function getApiKey(): string {
-  const env = import.meta.env || {};
-  return env.VITE_GROQ_API_KEY || (env as any).GROQ_API_KEY || "";
-}
-
 export async function analyzeSituation(situation: string): Promise<AnalysisResult> {
-  const apiKey = getApiKey();
-  
-  console.log("API Key available:", !!apiKey);
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY as string;
   
   if (!apiKey) {
-    console.error("Missing API Key. Env vars:", import.meta.env);
-    throw new Error("API Key não configurada. Configure VITE_GROQ_API_KEY no arquivo .env");
+    console.error("VITE_GROQ_API_KEY não encontrada");
+    throw new Error("API Key não configurada");
   }
 
   const prompt = `
@@ -104,8 +97,7 @@ export async function analyzeSituation(situation: string): Promise<AnalysisResul
   const data = await response.json();
   
   if (data.error) {
-    console.error("Groq API Error:", data.error);
-    throw new Error(`Erro da API: ${data.error.message || "Erro desconhecido"}`);
+    throw new Error(`Erro: ${data.error.message}`);
   }
   
   const text = data.choices?.[0]?.message?.content || "";
@@ -113,8 +105,7 @@ export async function analyzeSituation(situation: string): Promise<AnalysisResul
   try {
     return JSON.parse(cleanJsonResponse(text));
   } catch (error) {
-    console.error("Error parsing Groq response:", error);
-    console.error("Raw response:", text);
-    throw new Error("Falha ao processar a análise. Tente novamente.");
+    console.error("Parse error:", text);
+    throw new Error("Falha ao processar a análise");
   }
 }
