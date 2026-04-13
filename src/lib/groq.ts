@@ -31,13 +31,20 @@ function cleanJsonResponse(text: string): string {
 }
 
 function getApiKey(): string {
-  if (typeof window !== "undefined") {
-    return (import.meta as any).env?.VITE_GROQ_API_KEY || "";
-  }
-  return process.env.VITE_GROQ_API_KEY || process.env.GROQ_API_KEY || "";
+  const env = import.meta.env || {};
+  return env.VITE_GROQ_API_KEY || (env as any).GROQ_API_KEY || "";
 }
 
 export async function analyzeSituation(situation: string): Promise<AnalysisResult> {
+  const apiKey = getApiKey();
+  
+  console.log("API Key available:", !!apiKey);
+  
+  if (!apiKey) {
+    console.error("Missing API Key. Env vars:", import.meta.env);
+    throw new Error("API Key não configurada. Configure VITE_GROQ_API_KEY no arquivo .env");
+  }
+
   const prompt = `
     Você é o Agente de Decisão Humanizada NR-1, criado pelo Contador de Padarias.
     Sua missão é ajudar empresários de padarias a tomarem decisões sobre colaboradores considerando fatores psicossociais da NR-1.
@@ -76,12 +83,6 @@ export async function analyzeSituation(situation: string): Promise<AnalysisResul
     Responda APENAS o JSON válido, sem texto adicional.
   `;
 
-  const apiKey = getApiKey();
-  
-  if (!apiKey) {
-    throw new Error("API Key não configurada. Configure VITE_GROQ_API_KEY no arquivo .env");
-  }
-
   const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -101,6 +102,12 @@ export async function analyzeSituation(situation: string): Promise<AnalysisResul
   });
 
   const data = await response.json();
+  
+  if (data.error) {
+    console.error("Groq API Error:", data.error);
+    throw new Error(`Erro da API: ${data.error.message || "Erro desconhecido"}`);
+  }
+  
   const text = data.choices?.[0]?.message?.content || "";
   
   try {
