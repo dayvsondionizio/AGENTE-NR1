@@ -254,7 +254,10 @@ export default function App() {
                     <div className="space-y-6">
                       <div>
                         <h4 className="text-[11px] md:text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Contexto Inferido</h4>
-                        <p className="text-sm md:text-base text-slate-700 leading-relaxed">{result.contextoInferido}</p>
+                        <p className="text-sm md:text-base text-slate-700 leading-relaxed mb-4">{result.contextoInferido}</p>
+                        
+                        <h4 className="text-[11px] md:text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Método de Identificação</h4>
+                        <p className="text-sm md:text-base text-slate-700 leading-relaxed font-medium bg-slate-50 p-2 rounded-lg border border-slate-100">{result.metodoIdentificacao}</p>
                       </div>
                       <div>
                         <h4 className="text-[11px] md:text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Ações Imediatas Sugeridas</h4>

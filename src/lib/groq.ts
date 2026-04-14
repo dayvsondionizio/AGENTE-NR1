@@ -1,5 +1,6 @@
 export interface AnalysisResult {
   contextoInferido: string;
+  metodoIdentificacao: string;
   classificacaoRisco: "leve" | "moderado" | "crítico";
   justificativaRisco: string;
   acoesImediatas: string[];
@@ -21,20 +22,18 @@ export interface AnalysisResult {
 }
 
 export async function analyzeSituation(situation: string): Promise<AnalysisResult> {
-  const response = await fetch("/api/analyze", {
-    method: "POST",
+  const response = await fetch('/api/analyze', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ situation })
+    body: JSON.stringify({ situation }),
   });
 
-  const data = await response.json();
-  
   if (!response.ok) {
-    throw new Error(data.error || "Erro ao consultar a API.");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Falha ao analisar a situação');
   }
-  
-  // Data retornado por Vercel Edge handler já é JSON
-  return data as AnalysisResult;
+
+  return response.json();
 }

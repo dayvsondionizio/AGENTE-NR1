@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-import { AnalysisResult } from "./gemini"; // Preserving existing import name for interface
+import { AnalysisResult } from "./groq";
 
 interface PDFData {
   empresa: string;
@@ -73,7 +73,7 @@ export function generatePDF(data: PDFData) {
   // Seções Descritivas
   doc.setTextColor(0, 0, 0);
   const sections = [
-    { title: "1. CONTEXTO AVALIATIVO", content: analise.contextoInferido },
+    { title: "1. CONTEXTO E MÉTODO DE AVALIAÇÃO", content: `CONTEXTO INFERIDO:\n${analise.contextoInferido}\n\nMÉTODO DE IDENTIFICAÇÃO DO RISCO:\n${analise.metodoIdentificacao}` },
     { title: "2. CLASSIFICAÇÃO DE RISCO", content: `NÍVEL ${analise.classificacaoRisco.toUpperCase()}:\n${analise.justificativaRisco}` },
     { title: "3. AÇÕES PREVENTIVAS IMEDIATAS", content: analise.acoesImediatas.map(a => `• ${a}`).join("\n") },
     { title: "4. ESTRATÉGIA DE COMUNICAÇÃO OFERECIDA", content: analise.comunicacaoSugerida.map(c => `• "${c}"`).join("\n") },

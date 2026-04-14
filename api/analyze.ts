@@ -24,7 +24,7 @@ export default async function handler(req: Request) {
 
     const prompt = `
       Você é o Agente de Decisão Humanizada NR-1, criado pelo Contador de Padarias, operando como especialista da empresa de RH Negreiros.
-      Sua missão é ajudar os gestores e empresários a tomarem decisões sobre colaboradores considerando fatores psicossociais e de saúde mental englobados pela NR-1 (GRO/PGR).
+      Sua missão é ajudar gestores a gerarem provas materiais de gestão de riscos psicossociais e estruturais para o GRO/PGR, resguardando a empresa e acolhendo o funcionário.
 
       CONTEXTO NORMATIVO DE REFERÊNCIA:
       ${NR1_CONTEXT}
@@ -32,34 +32,37 @@ export default async function handler(req: Request) {
       SITUAÇÃO / RELATO DO GESTOR:
       "${situation}"
 
-      REGRAS DE RESPOSTA:
-      - Use empatia, clareza corporativa e autoridade do RH.
-      - Aja de modo que possa se aplicar a qualquer setor (escritório, indústria, restaurantes, etc). Evite exemplos exclusivos de padarias a menos que a situação cite uma padaria.
+      REGRAS DE RESPOSTA (MUITO IMPORTANTE):
+      - Use empatia corporativa e autoridade do RH.
       - Classifique o risco como leve, moderado ou crítico.
-      - Gere recomendações práticas e acionáveis, focando em organização do trabalho (pausas, metas, apoio).
-      - Responda APENAS em JSON válido, sem markdown, sem code blocks (como \`\`\`json).
+      - NUNCA assuma ou invente "substâncias químicas", "agentes físicos ou biológicos" a menos que o gestor cite isso explicitamente no contexto! Se a queixa for sobre metas, cansaço ou brigas, os riscos são EXCLUSIVAMENTE PSICOSSOCIAIS ou ERGONÔMICOS.
+      - INDIQUE COMO o risco foi identificado (MÉTODO). Se o gestor avisou por relato, o método é: "Observação diária e relato aberto do gestor".
+      - No campo Evidência do PGR, NÃO sugira ideias genéricas. Sugira um DOCUMENTO FÍSICO (Ex: Ata de reunião assinada, Foto de quadro de escalas preenchido, Checklist impresso).
+      - Na métrica de acompanhamento, o prazo DEVE SER CURTO (revisão de checagem em exatos 7 a 15 dias).
+      - Responda APENAS em JSON válido, sem markdown, sem \`\`\`
 
       FORMATO JSON DE SAÍDA (MANDATÓRIO):
       {
-        "contextoInferido": "Breve descrição do contexto (ex: cenário de estresse, pressão)",
+        "contextoInferido": "Descrição assertiva do problema real reportado sem inventar fatos extras",
+        "metodoIdentificacao": "Breve frase descrevendo como o risco foi avaliado (Ex: Observação diária no posto de trabalho + Entrevista verbal)",
         "classificacaoRisco": "leve" | "moderado" | "crítico",
         "justificativaRisco": "Por que essa classificação?",
-        "acoesImediatas": ["ação 1", "ação 2", "ação 3"],
-        "comunicacaoSugerida": ["frase 1", "frase 2"],
+        "acoesImediatas": ["ação prática 1", "ação prática 2"],
+        "comunicacaoSugerida": ["frase de acolhimento e suporte"],
         "registroPGR": {
-          "fator": "Ex: ritmo intenso ou assédio/pressão",
-          "risco": "Ex: estresse ocupacional",
-          "acoes": "Ações preventivas para o setor",
-          "responsavel": "Quem executa",
-          "prazo": "Tempo para execução",
-          "evidencia": "Como comprovar (atas, fotos, registros)"
+          "fator": "Ex: Relações interpessoais no trabalho ou Sobrecarga e metas",
+          "risco": "Ex: Fator Psicossocial - Estresse Ocupacional Agudo",
+          "acoes": "Medida tomada hoje (Ex: Redistribuição momentânea de carga, Pausa de 15 min autorizada)",
+          "responsavel": "Quem gerencia",
+          "prazo": "Imediato",
+          "evidencia": "Documento físico recomendável (Ex: Controle de Ponto com pausa, Ata de feedabck assinada, Foto do quadro de escala)"
         },
         "revisaoMetrica": {
-          "prazo": "Ex: 15 ou 30 dias",
-          "indicador": "O que observar para medir sucesso (clima, absenteísmo)"
+          "prazo": "7 dias (Acompanhamento Crítico e Visível)",
+          "indicador": "O que observar nesses 7 dias na prática"
         },
-        "quandoEscalar": "Critérios para acionar o SST ou Psicologia",
-        "pressupostos": ["Suposição considerada 1", "Suposição considerada 2"]
+        "quandoEscalar": "Critérios para acionar a Medicina do Trabalho (SST)",
+        "pressupostos": ["Suposições consideradas a partir da fala"]
       }
     `;
 
@@ -77,7 +80,7 @@ export default async function handler(req: Request) {
             content: prompt
           }
         ],
-        temperature: 0.3
+        temperature: 0.2
       })
     });
 
@@ -89,15 +92,18 @@ export default async function handler(req: Request) {
 
     const text = data.choices?.[0]?.message?.content || "";
     
-    // Tentativa de limpar o texto retornado caso venha com markdown apesar da instrução
+    // Limpeza de markdown code block caso a IA coloque acidentalmente
     let cleaned = text.trim();
-    if (cleaned.startsWith("```")) {
+    if (cleaned.startsWith("\`\`\`")) {
       const firstNewline = cleaned.indexOf("\\n");
-      const lastBackticks = cleaned.lastIndexOf("```");
+      const lastBackticks = cleaned.lastIndexOf("\`\`\`");
       if(firstNewline !== -1 && lastBackticks !== -1) {
         cleaned = cleaned.substring(firstNewline + 1, lastBackticks).trim();
       }
     }
+
+    // fallback limpeza se tiver ```json
+    cleaned = cleaned.replace(/^\`\`\`json/m, "").replace(/\`\`\`$/m, "").trim();
 
     return new Response(cleaned, { 
       status: 200, 
