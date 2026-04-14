@@ -68,7 +68,7 @@ export default function App() {
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-orange-500 p-2 rounded-xl shadow-lg shadow-orange-200">
-              <Coffee className="text-white w-6 h-6" />
+              <User className="text-white w-6 h-6" />
             </div>
             <div>
               <h1 className="font-bold text-lg leading-tight">Agente CP NR-1</h1>
@@ -91,7 +91,7 @@ export default function App() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl font-bold text-slate-900 mb-4">
-              Decisões seguras para quem cuida do pão de cada dia.
+              Decisões seguras e humanizadas para gestão de equipes.
             </h2>
             <p className="text-slate-600 max-w-2xl mx-auto leading-relaxed">
               Sou seu assistente especializado em fatores psicossociais. Descreva uma situação com seu colaborador 
@@ -106,7 +106,7 @@ export default function App() {
             <textarea
               value={situation}
               onChange={(e) => setSituation(e.target.value)}
-              placeholder="Ex: Meu balconista está muito irritado nos horários de pico e começou a cometer erros no caixa..."
+              placeholder="Ex: Minha equipe está cobrindo faltas frequentes, o que gerou sobrecarga e aumento na irritabilidade durante o atendimento..."
               className="w-full min-h-[160px] p-6 rounded-2xl border border-slate-200 bg-white shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none text-lg leading-relaxed placeholder:text-slate-300"
               disabled={loading}
             />
@@ -121,7 +121,7 @@ export default function App() {
                     animate={{ rotate: 360 }}
                     transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                   >
-                    <Coffee className="w-5 h-5" />
+                    <User className="w-5 h-5" />
                   </motion.div>
                 ) : (
                   <>
@@ -134,9 +134,9 @@ export default function App() {
           </form>
           <div className="mt-4 flex flex-wrap gap-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Sugestões:</span>
-            <button onClick={() => setSituation("Fornada atrasada e equipe sob pressão constante.")} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full transition-colors">Fornada atrasada</button>
-            <button onClick={() => setSituation("Conflito entre atendente e cliente no balcão.")} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full transition-colors">Conflito no balcão</button>
-            <button onClick={() => setSituation("Sinais de cansaço extremo no padeiro do turno da noite.")} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full transition-colors">Fadiga noturna</button>
+            <button onClick={() => setSituation("Equipe trabalhando com metas inatingíveis e sob pressão constante do gestor imediato.")} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full transition-colors">Pressão por Metas</button>
+            <button onClick={() => setSituation("Conflito aberto entre colaboradores devido a falha de comunicação e sobrecarga.")} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full transition-colors">Conflito na Equipe</button>
+            <button onClick={() => setSituation("Colaborador apresentando sinais de exaustão e desmotivação após longo período sem pausas compensatórias.")} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full transition-colors">Fadiga e Esgotamento</button>
           </div>
         </section>
 
@@ -245,13 +245,13 @@ export default function App() {
                   <div className="grid sm:grid-cols-2 gap-6 mb-8">
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                        <Store className="w-3 h-3" /> Nome da Padaria
+                        <Store className="w-3 h-3" /> Nome da Empresa
                       </label>
                       <input
                         type="text"
                         value={formData.empresa}
                         onChange={(e) => setFormData({...formData, empresa: e.target.value})}
-                        placeholder="Ex: Padaria do Sol"
+                        placeholder="Ex: Negreiros RH"
                         className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 outline-none"
                       />
                     </div>
