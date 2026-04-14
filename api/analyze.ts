@@ -66,7 +66,7 @@ export default async function handler(req: Request) {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": \`Bearer \${apiKey}\`,
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -91,9 +91,9 @@ export default async function handler(req: Request) {
     
     // Tentativa de limpar o texto retornado caso venha com markdown apesar da instrução
     let cleaned = text.trim();
-    if (cleaned.startsWith("\`\`\`")) {
+    if (cleaned.startsWith("```")) {
       const firstNewline = cleaned.indexOf("\\n");
-      const lastBackticks = cleaned.lastIndexOf("\`\`\`");
+      const lastBackticks = cleaned.lastIndexOf("```");
       if(firstNewline !== -1 && lastBackticks !== -1) {
         cleaned = cleaned.substring(firstNewline + 1, lastBackticks).trim();
       }
