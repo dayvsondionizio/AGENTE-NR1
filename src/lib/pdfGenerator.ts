@@ -70,13 +70,12 @@ export function generatePDF(data: PDFData) {
   doc.text(disclaimerSplit, margin + 5, y + 6);
   y += 32;
 
-  // Seções Descritivas
+  // Seções Descritivas (Ocultando a Estratégia de Comunicação do papel)
   doc.setTextColor(0, 0, 0);
   const sections = [
     { title: "1. CONTEXTO E MÉTODO DE AVALIAÇÃO", content: `CONTEXTO INFERIDO:\n${analise.contextoInferido}\n\nMÉTODO DE IDENTIFICAÇÃO DO RISCO:\n${analise.metodoIdentificacao}` },
     { title: "2. CLASSIFICAÇÃO DE RISCO", content: `NÍVEL ${analise.classificacaoRisco.toUpperCase()}:\n${analise.justificativaRisco}` },
-    { title: "3. AÇÕES PREVENTIVAS IMEDIATAS", content: analise.acoesImediatas.map(a => `• ${a}`).join("\n") },
-    { title: "4. ESTRATÉGIA DE COMUNICAÇÃO OFERECIDA", content: analise.comunicacaoSugerida.map(c => `• "${c}"`).join("\n") },
+    { title: "3. AÇÕES PREVENTIVAS IMEDIATAS", content: analise.acoesImediatas.map(a => `• ${a}`).join("\n") }
   ];
 
   sections.forEach(section => {
@@ -101,7 +100,7 @@ export function generatePDF(data: PDFData) {
     y = 20;
   }
   doc.setFont("helvetica", "bold");
-  doc.text("5. REGISTRO PARA O PROGRAMA DE GERENCIAMENTO DE RISCOS (PGR)", margin, y);
+  doc.text("4. REGISTRO PARA O PROGRAMA DE GERENCIAMENTO DE RISCOS (PGR)", margin, y);
   y += 6;
 
   autoTable(doc, {
@@ -123,10 +122,9 @@ export function generatePDF(data: PDFData) {
 
   y = (doc as any).lastAutoTable.finalY + 12;
 
-  // Informações Finais
+  // Informações Finais (Removido escalonamento corporativo para não vazar pro funcionário)
   const finalSections = [
-    { title: "6. PRAZO DE REVISÃO E MÉTRICA DE ACOMPANHAMENTO", content: `Prazo: ${analise.revisaoMetrica.prazo}\nIndicador Observado: ${analise.revisaoMetrica.indicador}` },
-    { title: "7. CRITÉRIO DE ESCALONAMENTO E APOIO ESPECIALIZADO", content: analise.quandoEscalar },
+    { title: "5. PRAZO DE REVISÃO E MÉTRICA DE ACOMPANHAMENTO", content: `Prazo: ${analise.revisaoMetrica.prazo}\nIndicador Observado: ${analise.revisaoMetrica.indicador}` }
   ];
 
   finalSections.forEach(section => {
